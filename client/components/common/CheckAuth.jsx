@@ -1,59 +1,53 @@
-import { usePathname } from "next/navigation";
-import Link from "next/link";
-import React from "react";
+"use client";
+import { usePathname, useRouter } from "next/navigation";
+import React, { useEffect, useState } from "react";
 
 const CheckAuth = ({ isAuthenticated, user, children }) => {
   const pathName = usePathname();
+  const router = useRouter();
 
-  // Check if the current path is for login or register
-  const isAuthPage =
-    pathName.includes("/login") || pathName.includes("/register");
-  const isAdminPage = pathName.includes("/admin");
-  const isShoppingPage = pathName.includes("/shopping");
+  const [redirecting, setRedirecting] = useState(false); // State to manage redirection logic
 
-  // Redirect to login if not authenticated and on an auth page
-  if (!isAuthenticated && isAuthPage) {
-    return (
-      <Link href="/auth/login">
-        <a>Redirecting to login...</a>
-      </Link>
-    );
-  }
+  useEffect(() => {
+    if (redirecting) return; // Prevent rerunning after redirection
 
-  // Redirect authenticated users away from login/register pages
-  if (isAuthenticated && isAuthPage) {
-    if (user?.role === "admin") {
-      return (
-        <Link href="/admin/dashboard">
-          <a>Redirecting to admin dashboard...</a>
-        </Link>
-      );
-    } else {
-      return (
-        <Link href="/shopping/home">
-          <a>Redirecting to home...</a>
-        </Link>
-      );
+    const isAuthPage =
+      pathName.includes("/login") || pathName.includes("/register");
+    const isAdminPage = pathName.includes("/admin");
+    const isShoppingPage = pathName.includes("/shopping");
+
+    // Redirect to login if not authenticated and not on an auth page
+    if (!isAuthenticated && !isAuthPage) {
+      setRedirecting(true); // Set to prevent re-triggering
+      router.push("/auth/login");
+      return;
     }
-  }
 
-  // Prevent non-admin users from accessing admin pages
-  if (isAuthenticated && user?.role !== "admin" && isAdminPage) {
-    return (
-      <Link href="/unauth-page">
-        <a>Redirecting to unauthorized page...</a>
-      </Link>
-    );
-  }
+    // Redirect authenticated users away from login/register pages
+    if (isAuthenticated && isAuthPage) {
+      setRedirecting(true);
+      if (user?.role === "admin") {
+        router.push("/admin/dashboard");
+      } else {
+        router.push("/shopping/home");
+      }
+      return;
+    }
 
-  // Prevent admin users from accessing shopping pages directly
-  if (isAuthenticated && user?.role === "admin" && isShoppingPage) {
-    return (
-      <Link href="/admin/dashboard">
-        <a>Redirecting to admin dashboard...</a>
-      </Link>
-    );
-  }
+    // Prevent non-admin users from accessing admin pages
+    if (isAuthenticated && user?.role !== "admin" && isAdminPage) {
+      setRedirecting(true);
+      router.push("/unauth");
+      return;
+    }
+
+    // Prevent admin users from accessing shopping pages directly
+    if (isAuthenticated && user?.role === "admin" && isShoppingPage) {
+      setRedirecting(true);
+      router.push("/admin/dashboard");
+      return;
+    }
+  }, [isAuthenticated, user, pathName, router, redirecting]);
 
   // Render children if no redirect is necessary
   return <div>{children}</div>;
