@@ -1,8 +1,12 @@
 "use client";
 import CommonForm from "@/components/common/CommonForm";
 import { registerFormControls } from "@/config";
+import { useToast } from "@/hooks/use-toast";
+import { registerUser } from "@/redux/features/auth-slice";
 import Link from "next/link";
+import { useRouter } from "next/navigation";
 import { useState } from "react";
+import { useDispatch } from "react-redux";
 
 const initialState = {
   userName: "",
@@ -13,10 +17,14 @@ const initialState = {
 const Register = () => {
   const [formData, setFormData] = useState(initialState);
 
+  const dispatch = useDispatch();
+
+  const router = useRouter();
+
+  const { toast } = useToast();
+
   const onSubmit = (e) => {
     e.preventDefault();
-    // TODO: send form data to the server for registration
-    console.log(formData);
   };
 
   return (
@@ -28,7 +36,7 @@ const Register = () => {
         <div className="mt-2 flex items-center justify-center">
           <span className="mr-2">Already have an account?</span>
           <Link href="/auth/login">
-            <p className="font-medium text-primary hover:underline-offset-0">
+            <p className="font-medium text-primary hover:underline-offset-0 *:">
               Login
             </p>
           </Link>

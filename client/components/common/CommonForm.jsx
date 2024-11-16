@@ -119,7 +119,10 @@ const CommonForm = ({
             </div>
           ))}
         </div>
-        <Button type="submit" className="mt-2 w-full bg-black text-white">
+        <Button
+          type="submit"
+          className="mt-2 w-full bg-black text-white hover:bg-slate-400 hover:text-black"
+        >
           {buttonText || "submit"}
         </Button>
       </form>

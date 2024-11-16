@@ -1,27 +1,47 @@
-import { createSlice } from "@reduxjs/toolkit";
+import { createAsyncThunk, createSlice } from "@reduxjs/toolkit";
+import axios from "axios";
 
 const initialState = {
-  value: {
-    isAuth: false,
-    username: "",
-    uid: "",
-    isModerator: false, // Corrected spelling here
-  },
+  isAuthenticated: false,
+  isLoading: true,
+  user: null,
 };
+
+export const registerUser = createAsyncThunk(
+  "/auth/register",
+  async (FormData) => {
+    const response = await axios.post(
+      "http://localhost:5000/api/auth/register",
+      FormData,
+      {
+        withCredentials: true,
+      }
+    );
+    return response.data;
+  }
+);
 
 export const auth = createSlice({
   name: "auth",
   initialState,
   reducers: {
-    logOut: () => initialState,
-    logIn: (state, action) => {
-      state.value = {
-        isAuth: true,
-        username: action.payload.username,
-        uid: action.payload.uid,
-        isModerator: action.payload.isModerator, // Corrected spelling here
-      };
-    },
+    setUser: (state, action) => {},
+  },
+  extraReducers: (builder) => {
+    builder
+      .addCase(registerUser.pending, (state) => {
+        state.isLoading = true;
+      })
+      .addCase(registerUser.fulfilled, (state, action) => {
+        state.isLoading = false;
+        state.user = null;
+        state.isAuthenticated = false;
+      })
+      .addCase(registerUser.rejected, (state, action) => {
+        state.isLoading = false;
+        state.user = null;
+        state.isAuthenticated = false;
+      });
   },
 });
 

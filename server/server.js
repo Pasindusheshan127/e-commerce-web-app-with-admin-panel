@@ -2,11 +2,11 @@ const express = require("express");
 const mongoose = require("mongoose");
 const cookieParser = require("cookie-parser");
 const cors = require("cors");
+const authRouter = require("./routes/auth/auth-routes");
 
+require("dotenv").config();
 mongoose
-  .connect(
-    "mongodb+srv://pasinduhettiarachchi201:pasindu123@backenddb.qq1ax.mongodb.net/?retryWrites=true&w=majority&appName=backendDB"
-  )
+  .connect(process.env.MONGO_URI)
   .then(() => console.log("MongoDB connected"))
   .catch((error) => console.log(error));
 
@@ -30,5 +30,6 @@ app.use(
 
 app.use(cookieParser());
 app.use(express.json());
+app.use("/api/auth", authRouter);
 
 app.listen(PORT, () => console.log(`Server is now running on port ${PORT}`));
