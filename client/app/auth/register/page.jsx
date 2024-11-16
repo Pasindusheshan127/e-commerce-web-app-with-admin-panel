@@ -25,6 +25,16 @@ const Register = () => {
 
   const onSubmit = (e) => {
     e.preventDefault();
+    dispatch(registerUser(formData)).then((data) => {
+      if (data?.payload?.success) {
+        toast({
+          title: data?.payload?.massage,
+          description: "Friday, February 10, 2023 at 5:57 PM",
+        });
+        router.push("/auth/login");
+      }
+    });
+    console.log(formData);
   };
 
   return (
