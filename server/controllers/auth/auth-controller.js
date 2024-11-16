@@ -8,6 +8,13 @@ const registerUser = async (req, res) => {
   const { userName, email, password } = req.body;
 
   try {
+    const checkUser = await User.findOne({ email });
+    if (checkUser)
+      return res.json({
+        success: false,
+        message: "User Already exists with the same email! Please try again",
+      });
+
     const hashPassword = await bcrypt.hash(password, 12);
     const newUser = new User({
       userName,
@@ -20,13 +27,6 @@ const registerUser = async (req, res) => {
       message: "User registered successfully",
     });
   } catch (err) {
-    if (err.code === 11000) {
-      // Mongoose duplicate key error
-      return res.status(400).json({
-        success: false,
-        message: "User with this email or username already exists",
-      });
-    }
     res.status(500).json({
       success: false,
       message: "An internal server error occurred",
@@ -35,8 +35,46 @@ const registerUser = async (req, res) => {
 };
 
 //login
-const login = async (req, res) => {
+const loginUser = async (req, res) => {
+  const { email, password } = req.body;
   try {
+    const checkUser = await User.findOne({ email });
+    if (!checkUser) {
+      return res.json({
+        success: false,
+        message: "User does not exist! Please register first",
+      });
+    }
+
+    const checkPasswordMatch = await bcrypt.compare(
+      password,
+      checkUser.password
+    );
+    if (!checkPasswordMatch) {
+      return res.json({
+        success: false,
+        message: "Invalid password! Please try again",
+      });
+    }
+
+    const token = jwt.sign(
+      { id: checkUser._id, role: checkUser.role, email: checkUser.email },
+      process.env.JWT_SECRET,
+      {
+        expiresIn: "1h",
+      }
+    );
+
+    res.cookie("token", token, { httpOnly: true, secure: false }).json({
+      success: true,
+      message: "User logged in successfully",
+      token: token,
+      user: {
+        userName: checkUser.userName,
+        email: checkUser.email,
+        role: checkUser.role,
+      },
+    });
   } catch (err) {
     res.status(500).json({
       success: false,
@@ -49,4 +87,4 @@ const login = async (req, res) => {
 
 //auth middleware
 
-module.exports = { registerUser };
+module.exports = { registerUser, loginUser };
