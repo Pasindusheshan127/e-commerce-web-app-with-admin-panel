@@ -1,30 +1,28 @@
 "use client";
 import { usePathname, useRouter } from "next/navigation";
-import React, { useEffect, useState } from "react";
+import { useEffect } from "react";
 
 const CheckAuth = ({ isAuthenticated, user, children }) => {
   const pathName = usePathname();
   const router = useRouter();
 
-  const [redirecting, setRedirecting] = useState(false); // State to manage redirection logic
+  // Check if the current page is a login or register page
+  const isAuthPage =
+    pathName.includes("/login") || pathName.includes("/register");
+  // Check if the current page is an admin-specific page
+  const isAdminPage = pathName.includes("/admin");
+  // Check if the current page is a shopping page
+  const isShoppingPage = pathName.includes("/shopping");
 
   useEffect(() => {
-    if (redirecting) return; // Prevent rerunning after redirection
-    const isAuthPage =
-      pathName.includes("/login") || pathName.includes("/register");
-    const isAdminPage = pathName.includes("/admin");
-    const isShoppingPage = pathName.includes("/shopping");
-
-    // Redirect to login if not authenticated and not on an auth page
+    // If user is not authenticated and not on an auth page, redirect to login
     if (!isAuthenticated && !isAuthPage) {
-      setRedirecting(true); // Set to prevent re-triggering
       router.push("/auth/login");
       return;
     }
 
-    // Redirect authenticated users away from login/register pages
+    // If user is authenticated and tries to access login/register pages, redirect based on their role
     if (isAuthenticated && isAuthPage) {
-      setRedirecting(true);
       if (user?.role === "admin") {
         router.push("/admin/dashboard");
       } else {
@@ -33,22 +31,34 @@ const CheckAuth = ({ isAuthenticated, user, children }) => {
       return;
     }
 
-    // Prevent non-admin users from accessing admin pages
+    // Redirect non-admin users away from admin pages
     if (isAuthenticated && user?.role !== "admin" && isAdminPage) {
-      setRedirecting(true);
       router.push("/unauth");
       return;
     }
 
-    // Prevent admin users from accessing shopping pages directly
+    // Redirect admin users away from shopping pages
     if (isAuthenticated && user?.role === "admin" && isShoppingPage) {
-      setRedirecting(true);
       router.push("/admin/dashboard");
       return;
     }
-  }, [isAuthenticated, user, pathName, router, redirecting]);
 
-  // Render children if no redirect is necessary
+    // If the path is the root, redirect based on authentication and role
+    if (pathName === "/") {
+      if (!isAuthenticated) {
+        router.push("/auth/login");
+      } else {
+        if (user?.role === "admin") {
+          router.push("/admin/dashboard");
+        } else {
+          router.push("/shopping/home");
+        }
+      }
+      return;
+    }
+  }, [isAuthenticated, pathName, router, user?.role]); // Dependencies ensure this runs when these change
+
+  // Render the children if no redirection occurred
   return <div>{children}</div>;
 };
 

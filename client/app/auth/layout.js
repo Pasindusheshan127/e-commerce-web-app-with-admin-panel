@@ -1,5 +1,6 @@
 "use client";
 import CheckAuth from "@/components/common/CheckAuth";
+import { Skeleton } from "@/components/ui/skeleton";
 import { checkAuth } from "@/redux/features/auth-slice";
 import { useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
@@ -21,7 +22,10 @@ const AuthLayout = ({ children }) => {
     dispatch(checkAuth());
   }, [dispatch]);
 
-  if (isLoading) return <div>Loading...</div>;
+  if (isLoading)
+    return <Skeleton className="w-[600px] h-[600px] rounded-full" />;
+
+  console.log(isLoading, user);
 
   return (
     <CheckAuth isAuthenticated={isAuthenticated} user={user}>

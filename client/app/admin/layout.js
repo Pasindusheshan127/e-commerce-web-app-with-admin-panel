@@ -2,7 +2,10 @@
 import AdminHeader from "@/components/AdminHeader";
 import AdminSidebar from "@/components/AdminSidebar";
 import CheckAuth from "@/components/common/CheckAuth";
-import { useSelector } from "react-redux";
+import { Skeleton } from "@/components/ui/skeleton";
+import { checkAuth } from "@/redux/features/auth-slice";
+import { useEffect } from "react";
+import { useDispatch, useSelector } from "react-redux";
 
 const AdminLayout = ({ children }) => {
   // const isAuthenticated = false; //dummy for testing
@@ -11,6 +14,18 @@ const AdminLayout = ({ children }) => {
   const { user, isAuthenticated, isLoading } = useSelector(
     (state) => state.auth
   );
+
+  const dispatch = useDispatch();
+
+  useEffect(() => {
+    // Dispatch the checkAuth action to verify user authentication
+    dispatch(checkAuth());
+  }, [dispatch]);
+
+  if (isLoading)
+    return <Skeleton className="w-[600px] h-[600px] rounded-full" />;
+
+  console.log(isLoading, user);
 
   return (
     <CheckAuth isAuthenticated={isAuthenticated} user={user}>

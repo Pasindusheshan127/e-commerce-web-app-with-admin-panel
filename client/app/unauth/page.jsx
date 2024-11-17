@@ -1,7 +1,7 @@
 import React from "react";
 
-const page = () => {
-  return <div>page</div>;
+const UnauthPage = () => {
+  return <div>You don't have access to view this page</div>;
 };
 
-export default page;
+export default UnauthPage;
