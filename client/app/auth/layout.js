@@ -1,6 +1,8 @@
 "use client";
 import CheckAuth from "@/components/common/CheckAuth";
-import { useSelector } from "react-redux";
+import { checkAuth } from "@/redux/features/auth-slice";
+import { useEffect } from "react";
+import { useDispatch, useSelector } from "react-redux";
 
 const AuthLayout = ({ children }) => {
   // const isAuthenticated = false;        //dummy for testing
@@ -11,6 +13,15 @@ const AuthLayout = ({ children }) => {
   const { user, isAuthenticated, isLoading } = useSelector(
     (state) => state.auth
   );
+
+  const dispatch = useDispatch();
+
+  useEffect(() => {
+    // Dispatch the checkAuth action to verify user authentication
+    dispatch(checkAuth());
+  }, [dispatch]);
+
+  if (isLoading) return <div>Loading...</div>;
 
   return (
     <CheckAuth isAuthenticated={isAuthenticated} user={user}>
