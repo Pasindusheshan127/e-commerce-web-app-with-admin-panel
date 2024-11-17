@@ -10,7 +10,6 @@ const CheckAuth = ({ isAuthenticated, user, children }) => {
 
   useEffect(() => {
     if (redirecting) return; // Prevent rerunning after redirection
-
     const isAuthPage =
       pathName.includes("/login") || pathName.includes("/register");
     const isAdminPage = pathName.includes("/admin");

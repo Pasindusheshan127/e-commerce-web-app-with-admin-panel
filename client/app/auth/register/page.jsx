@@ -29,12 +29,16 @@ const Register = () => {
       if (data?.payload?.success) {
         toast({
           title: data?.payload?.massage,
-          description: "Friday, February 10, 2023 at 5:57 PM",
         });
         router.push("/auth/login");
+      } else {
+        toast({
+          title: data?.payload?.message,
+          variant: "destructive",
+        });
       }
+      console.log(data);
     });
-    console.log(formData);
   };
 
   return (

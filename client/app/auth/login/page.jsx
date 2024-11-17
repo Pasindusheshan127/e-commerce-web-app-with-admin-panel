@@ -1,8 +1,11 @@
 "use client";
 import CommonForm from "@/components/common/CommonForm";
 import { loginFormControls } from "@/config";
+import { toast } from "@/hooks/use-toast";
+import { loginUser } from "@/redux/features/auth-slice";
 import Link from "next/link";
 import { useState } from "react";
+import { useDispatch } from "react-redux";
 
 const initialState = {
   email: "",
@@ -12,10 +15,25 @@ const initialState = {
 const Login = () => {
   const [formData, setFormData] = useState(initialState);
 
+  const dispatch = useDispatch();
+
   const onSubmit = (e) => {
     e.preventDefault();
-    // TODO: send form data to the server for registration
-    console.log(formData);
+    dispatch(loginUser(formData)).then((data) => {
+      if (data?.payload?.success) {
+        toast({
+          title: data?.payload?.message,
+          description: "Successfully logged in",
+        });
+      } else {
+        toast({
+          title: data?.payload?.message,
+          description: "Failed to log in",
+          variant: "destructive",
+        });
+      }
+      console.log(data);
+    });
   };
 
   return (
