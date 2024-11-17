@@ -1,11 +1,16 @@
+"use client";
 import CheckAuth from "@/components/common/CheckAuth";
+import { useSelector } from "react-redux";
 
 const AuthLayout = ({ children }) => {
-  const isAuthenticated = false; //dummy for testing
-  const user = {
-    name: "sara",
-    role: "user",
-  }; //dummy for testing
+  // const isAuthenticated = false;        //dummy for testing
+  // const user = {
+  //   name: "sara",
+  //   role: "user",
+  // };         //dummy for testing
+  const { user, isAuthenticated, isLoading } = useSelector(
+    (state) => state.auth
+  );
 
   return (
     <CheckAuth isAuthenticated={isAuthenticated} user={user}>

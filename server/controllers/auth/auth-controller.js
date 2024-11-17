@@ -57,6 +57,7 @@ const loginUser = async (req, res) => {
       });
     }
 
+    // Generate a JWT token
     const token = jwt.sign(
       { id: checkUser._id, role: checkUser.role, email: checkUser.email },
       process.env.JWT_SECRET,
@@ -65,7 +66,10 @@ const loginUser = async (req, res) => {
       }
     );
 
-    res.cookie("token", token, { httpOnly: true, secure: false }).json({
+    // Send the token as a cookie
+    res.cookie("token", token, { httpOnly: true, secure: false });
+
+    res.status(200).json({
       success: true,
       message: "User logged in successfully",
       token: token,
@@ -78,7 +82,7 @@ const loginUser = async (req, res) => {
   } catch (err) {
     res.status(500).json({
       success: false,
-      message: "Some error occurred",
+      message: "An internal server error occurred",
     });
   }
 };
