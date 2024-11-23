@@ -13,117 +13,129 @@ import { Textarea } from "../ui/textarea";
 import { Button } from "../ui/button";
 
 const CommonForm = ({
-  formControls,
-  formData,
-  setFormData,
-  onSubmit,
-  buttonText,
+  formControls, // Array of control configurations (name, label, type, etc.)
+  formData, // State object containing form values
+  setFormData, // Function to update form data state
+  onSubmit, // Callback for form submission
+  buttonText, // Text for the submit button
 }) => {
-  const renderInputsByComponentType = (getControlItem) => {
-    let element = null;
-    const value = formData[getControlItem.name] || "";
+  /**
+   * Renders form inputs based on the `componentType` provided.
+   * @param {Object} control - The control configuration for the current input.
+   * @returns {JSX.Element} The input component (Input, Select, or Textarea).
+   */
+  const renderInputsByComponentType = (control) => {
+    // Extract current value from form data or default to undefined
+    const value = formData[control.name] || undefined;
 
-    switch (getControlItem.componentType) {
+    switch (control.componentType) {
       case "input":
-        element = (
+        return (
           <Input
-            name={getControlItem.name}
-            placeholder={getControlItem.placeholder}
-            id={getControlItem.name}
-            type={getControlItem.type}
-            value={value}
+            name={control.name}
+            placeholder={control.placeholder}
+            id={control.name}
+            type={control.type || "text"}
+            value={value || ""}
             onChange={(event) =>
               setFormData({
                 ...formData,
-                [getControlItem.name]: event.target.value,
+                [control.name]: event.target.value,
               })
             }
           />
         );
 
-        break;
       case "select":
-        element = (
+        return (
           <Select
-            onValueChange={(value) =>
+            value={value}
+            onValueChange={(selectedValue) =>
               setFormData({
                 ...formData,
-                [getControlItem.name]: value,
+                [control.name]: selectedValue,
               })
             }
-            value={value}
           >
-            <SelectTrigger className="w-full">
-              <SelectValue placeholder={getControlItem.label} />
+            <SelectTrigger className="w-full bg-white text-black border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:outline-none">
+              <SelectValue placeholder={control.label} />
             </SelectTrigger>
-            <SelectContent>
-              {getControlItem.options && getControlItem.options.length > 0
-                ? getControlItem.options.map((optionItem) => (
-                    <SelectItem key={optionItem.id} value={optionItem.id}>
-                      {optionItem.label}
-                    </SelectItem>
-                  ))
-                : null}
+            <SelectContent className="bg-white text-black border border-gray-300 rounded-md">
+              {control.options && control.options.length > 0 ? (
+                control.options.map((option) => (
+                  <SelectItem
+                    key={option.id}
+                    value={option.id}
+                    className="hover:bg-gray-100"
+                  >
+                    {option.label}
+                  </SelectItem>
+                ))
+              ) : (
+                <SelectItem disabled>No options available</SelectItem>
+              )}
             </SelectContent>
           </Select>
         );
 
-        break;
       case "textarea":
-        element = (
+        return (
           <Textarea
-            name={getControlItem.name}
-            placeholder={getControlItem.placeholder}
-            id={getControlItem.id}
-            value={value}
+            name={control.name}
+            placeholder={control.placeholder}
+            id={control.name}
+            value={value || ""}
             onChange={(event) =>
               setFormData({
                 ...formData,
-                [getControlItem.name]: event.target.value,
+                [control.name]: event.target.value,
               })
             }
           />
         );
-
-        break;
 
       default:
-        element = (
+        // Default to an input field if componentType is unknown
+        return (
           <Input
-            name={getControlItem.name}
-            placeholder={getControlItem.placeholder}
-            id={getControlItem.name}
-            type={getControlItem.type}
-            value={value}
+            name={control.name}
+            placeholder={control.placeholder}
+            id={control.name}
+            type={control.type || "text"}
+            value={value || ""}
             onChange={(event) =>
               setFormData({
                 ...formData,
-                [getControlItem.name]: event.target.value,
+                [control.name]: event.target.value,
               })
             }
           />
         );
-        break;
     }
-    return element;
   };
 
   return (
     <div>
       <form onSubmit={onSubmit}>
+        {/* Render form controls dynamically */}
         <div className="flex flex-col gap-3">
-          {formControls.map((controlItem) => (
-            <div key={controlItem.name} className="grid w-full gap-1.5">
-              <Label className="mb-1">{controlItem.label}</Label>
-              {renderInputsByComponentType(controlItem)}
+          {formControls.map((control) => (
+            <div key={control.name} className="grid w-full gap-1.5">
+              {/* Display the label for the control */}
+              <Label htmlFor={control.name} className="mb-1">
+                {control.label}
+              </Label>
+              {/* Render input based on component type */}
+              {renderInputsByComponentType(control)}
             </div>
           ))}
         </div>
+        {/* Submit button */}
         <Button
           type="submit"
           className="mt-2 w-full bg-black text-white hover:bg-slate-400 hover:text-black"
         >
-          {buttonText || "submit"}
+          {buttonText || "Submit"}
         </Button>
       </form>
     </div>
