@@ -4,7 +4,7 @@ const ProductSchema = new mongoose.Schema(
   {
     image: {
       type: String,
-      required: [true, "Image URL is required"],
+      //   required: [true, "Image URL is required"],
     },
     title: {
       type: String,
@@ -29,7 +29,7 @@ const ProductSchema = new mongoose.Schema(
     },
     brand: {
       type: String,
-      required: [true, "Brand is required"],
+      //   required: [true, "Brand is required"],
     },
     price: {
       type: Number,
@@ -47,7 +47,7 @@ const ProductSchema = new mongoose.Schema(
     },
     totalStock: {
       type: Number,
-      required: [true, "Total stock is required"],
+      //   required: [true, "Total stock is required"],
       min: [0, "Total stock must be at least 0"],
       default: 0,
     },
