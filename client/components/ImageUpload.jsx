@@ -1,5 +1,5 @@
 "use client";
-import React, { useRef } from "react";
+import React, { useEffect, useRef } from "react";
 import { Label } from "./ui/label";
 import { Input } from "./ui/input";
 import { FileIcon, UploadCloudIcon, XIcon } from "lucide-react";
@@ -51,7 +51,7 @@ const ImageUpload = ({
 
   const handleDragLeave = (event) => {
     event.preventDefault();
-    event.currentTarget.style.borderColor = ""; // Reset border color
+    event.currentTarget.style.borderColor = "#d1d5db"; // Reset border color
   };
 
   const handleDrop = (event) => {
@@ -84,6 +84,42 @@ const ImageUpload = ({
       inputRef.current.value = ""; // Clear the input field
     }
   };
+
+  const uploadImageToCloudinary = async () => {
+    setImageLoadingState(true);
+
+    // Create FormData to send file
+    const formData = new FormData();
+    formData.append("my_file", imageFile); // 'my_file' must match the key in backend
+
+    try {
+      const response = await fetch(
+        "http://localhost:5000/api/admin/products/upload-image",
+        {
+          method: "POST",
+          body: formData,
+        }
+      );
+
+      const data = await response.json();
+
+      if (response.ok) {
+        setUploadedImageUrl(data.result.url); // Update URL with the uploaded image URL
+        alert("Image uploaded successfully!");
+      } else {
+        alert(data.message || "Image upload failed.");
+      }
+    } catch (error) {
+      console.error("Error uploading image:", error);
+      alert("An error occurred during image upload.");
+    } finally {
+      setImageLoadingState(false);
+    }
+  };
+
+  useEffect(() => {
+    if (imageFile !== null) uploadImageToCloudinary();
+  }, [imageFile]);
 
   return (
     <div className="w-full max-w-md mx-auto mt-4">
