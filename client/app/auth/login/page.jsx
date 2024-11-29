@@ -2,7 +2,7 @@
 import CommonForm from "@/components/common/CommonForm";
 import { loginFormControls } from "@/config";
 import { toast } from "@/hooks/use-toast";
-import { loginUser } from "@/redux/features/auth-slice";
+import { loginUser } from "@/redux/features/authSlice";
 import Link from "next/link";
 import { useState } from "react";
 import { useDispatch } from "react-redux";

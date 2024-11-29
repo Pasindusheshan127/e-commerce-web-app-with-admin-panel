@@ -1,7 +1,7 @@
 "use client";
 import CheckAuth from "@/components/common/CheckAuth";
 import { Skeleton } from "@/components/ui/skeleton";
-import { checkAuth } from "@/redux/features/auth-slice";
+import { checkAuth } from "@/redux/features/authSlice";
 import { useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
 

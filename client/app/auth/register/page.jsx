@@ -2,7 +2,7 @@
 import CommonForm from "@/components/common/CommonForm";
 import { registerFormControls } from "@/config";
 import { useToast } from "@/hooks/use-toast";
-import { registerUser } from "@/redux/features/auth-slice";
+import { registerUser } from "@/redux/features/authSlice";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useState } from "react";

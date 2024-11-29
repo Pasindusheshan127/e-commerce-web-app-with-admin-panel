@@ -3,7 +3,7 @@ import AdminHeader from "@/components/AdminHeader";
 import AdminSidebar from "@/components/AdminSidebar";
 import CheckAuth from "@/components/common/CheckAuth";
 import { Skeleton } from "@/components/ui/skeleton";
-import { checkAuth } from "@/redux/features/auth-slice";
+import { checkAuth } from "@/redux/features/authSlice";
 import { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 
